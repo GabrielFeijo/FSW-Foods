@@ -19,6 +19,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
           alt={product.name}
           fill
           className="rounded-lg object-cover shadow"
+          quality={100}
         />
 
         {product.discountPercentage && (

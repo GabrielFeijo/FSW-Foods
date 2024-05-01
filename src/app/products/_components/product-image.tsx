@@ -19,6 +19,7 @@ const ProductImage = ({ product }: ProductImageProps) => {
         alt={product.name}
         fill
         className="object-cover"
+        quality={100}
       />
       <Button
         onClick={() => router.back()}
