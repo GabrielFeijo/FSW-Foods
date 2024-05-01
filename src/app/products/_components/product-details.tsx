@@ -59,7 +59,7 @@ const ProductDetails = ({
           />
           <span className="text-xs">{product.restaurant.name}</span>
         </div>
-        <h1 className="mb-2 mt-1 text-xl font-semibold">{product.name}</h1>
+        <h1 className="my-1 text-xl font-semibold">{product.name}</h1>
         <div className="flex justify-between">
           <div>
             <div className="flex items-center gap-2">
