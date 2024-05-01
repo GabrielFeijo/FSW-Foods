@@ -1,16 +1,11 @@
 "use client";
+import DeliveryInfo from "@/components/delivery-info";
 import DiscountBadge from "@/components/discount-badge";
 import ProductList from "@/components/product-list";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { formatCurrency, calculateProductTotalPrice } from "@/helpers/price";
 import { Prisma } from "@prisma/client";
-import {
-  BikeIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  TimerIcon,
-} from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -59,7 +54,7 @@ const ProductDetails = ({
             alt={product.restaurant.name}
             width={0}
             height={0}
-            className="h-6 w-6 rounded-full object-cover"
+            className="size-6 rounded-full object-cover"
             quality={100}
           />
           <span className="text-xs">{product.restaurant.name}</span>
@@ -79,6 +74,7 @@ const ProductDetails = ({
               </p>
             )}
           </div>
+
           <div className="flex items-center gap-2">
             <Button
               size="icon"
@@ -98,30 +94,9 @@ const ProductDetails = ({
             </Button>
           </div>
         </div>
-        <Card className="mt-6 flex justify-around py-3">
-          <div className="text-center">
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <span>Entrega</span>
-              <BikeIcon size={14} />
-            </div>
-            {Number(product.restaurant.deliveryFee) > 0 ? (
-              <p className="text-xs font-semibold">
-                {formatCurrency(Number(product.restaurant.deliveryFee))}
-              </p>
-            ) : (
-              <p className="text-xs font-semibold">Grátis</p>
-            )}
-          </div>
-          <div className="text-center">
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <span>Entrega</span>
-              <TimerIcon size={14} />
-            </div>
-            <p className="text-xs font-semibold">
-              {product.restaurant.deliveryTimeMinutes} min
-            </p>
-          </div>
-        </Card>
+
+        <DeliveryInfo restaurant={product.restaurant} />
+
         <div className="mt-6 space-y-3">
           <h3 className="font-semibold">Sobre</h3>
           <p className="text-sm text-muted-foreground">{product.description}</p>
