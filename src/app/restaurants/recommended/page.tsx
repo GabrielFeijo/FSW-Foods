@@ -11,12 +11,12 @@ const RecommendedRestaurants = async () => {
       <Header />
       <div className="px-5 py-6">
         <h2 className="mb-6 text-lg font-semibold">Restaurante Recomendados</h2>
-        <div className="flex w-full flex-wrap justify-center gap-6">
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {restaurants.map((restaurant) => (
             <RestaurantItem
               key={restaurant.id}
               restaurant={restaurant}
-              className=" min-w-full sm:min-w-64 "
+              className=" min-w-full  "
             />
           ))}
         </div>
