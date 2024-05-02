@@ -1,13 +1,21 @@
 "use client";
+import Cart from "@/components/cart";
 import DeliveryInfo from "@/components/delivery-info";
 import DiscountBadge from "@/components/discount-badge";
 import ProductList from "@/components/product-list";
 import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { CartContext } from "@/contexts/cart";
 import { formatCurrency, calculateProductTotalPrice } from "@/helpers/price";
 import { Prisma } from "@prisma/client";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 interface ProductDetailsProps {
   product: Prisma.ProductGetPayload<{
@@ -33,7 +41,9 @@ const ProductDetails = ({
   product,
   complementaryProducts,
 }: ProductDetailsProps) => {
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const { addProductToCart, products } = useContext(CartContext);
 
   const decrementQuantity = () => {
     if (quantity > 1) {
@@ -45,81 +55,95 @@ const ProductDetails = ({
     setQuantity((prev: number) => prev + 1);
   };
 
+  const handleAddToCartClick = () => {
+    addProductToCart(product, quantity);
+    setIsCartOpen(true);
+  };
+
   return (
-    <div className="relative z-10 -mt-6 rounded-tl-3xl rounded-tr-3xl bg-white py-5 ">
-      <section className="px-5">
-        <div className="flex items-center gap-[0.375rem] ">
-          <Image
-            src={product.restaurant.imageUrl}
-            alt={product.restaurant.name}
-            width={0}
-            height={0}
-            className="size-6 rounded-full object-cover"
-            quality={100}
-          />
-          <span className="text-xs">{product.restaurant.name}</span>
-        </div>
-        <h1 className="my-1 text-xl font-semibold">{product.name}</h1>
-        <div className="flex justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl font-semibold">
-                Por: {formatCurrency(calculateProductTotalPrice(product))}
-              </h2>
-              <DiscountBadge product={product} />
+    <>
+      <div className="relative z-10 -mt-6 rounded-tl-3xl rounded-tr-3xl bg-white py-5 ">
+        <section className="px-5">
+          <div className="flex items-center gap-[0.375rem] ">
+            <Image
+              src={product.restaurant.imageUrl}
+              alt={product.restaurant.name}
+              width={0}
+              height={0}
+              className="size-6 rounded-full object-cover"
+              quality={100}
+            />
+            <span className="text-xs">{product.restaurant.name}</span>
+          </div>
+
+          <h1 className="my-1 text-xl font-semibold">{product.name}</h1>
+
+          <div className="flex justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-semibold">
+                  Por: {formatCurrency(calculateProductTotalPrice(product))}
+                </h2>
+                <DiscountBadge product={product} />
+              </div>
+              {product.discountPercentage > 0 && (
+                <p className="text-sm text-muted-foreground">
+                  De: {formatCurrency(Number(product.price))}
+                </p>
+              )}
             </div>
-            {product.discountPercentage > 0 && (
-              <p className="text-sm text-muted-foreground">
-                De: {formatCurrency(Number(product.price))}
-              </p>
-            )}
-          </div>
 
-          <div className="flex items-center gap-2">
-            <Button
-              size="icon"
-              variant={quantity > 1 ? "default" : "ghost"}
-              className={
-                quantity <= 1
-                  ? `border border-solid border-muted-foreground`
-                  : ""
-              }
-              onClick={decrementQuantity}
-            >
-              <ChevronLeftIcon />
-            </Button>
-            <span className="w-4 text-center">{quantity}</span>
-            <Button size="icon" onClick={incrementQuantity}>
-              <ChevronRightIcon />
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                size="icon"
+                variant={quantity > 1 ? "default" : "ghost"}
+                className={
+                  quantity <= 1
+                    ? `border border-solid border-muted-foreground`
+                    : ""
+                }
+                onClick={decrementQuantity}
+              >
+                <ChevronLeftIcon />
+              </Button>
+              <span className="w-4 text-center">{quantity}</span>
+              <Button size="icon" onClick={incrementQuantity}>
+                <ChevronRightIcon />
+              </Button>
+            </div>
           </div>
-        </div>
-
-        <DeliveryInfo restaurant={product.restaurant} />
+          <DeliveryInfo restaurant={product.restaurant} />
+          <div className="mt-6 space-y-3">
+            <h3 className="font-semibold">Sobre</h3>
+            <p className="text-sm text-muted-foreground">
+              {product.description}
+            </p>
+          </div>
+        </section>
 
         <div className="mt-6 space-y-3">
-          <h3 className="font-semibold">Sobre</h3>
-          <p className="text-sm text-muted-foreground">{product.description}</p>
+          <h3 className="px-5 font-semibold">Sucos</h3>
+          <ProductList products={complementaryProducts} />
         </div>
-      </section>
-
-      <div className="mt-6 space-y-3">
-        <h3 className="px-5 font-semibold">Sucos</h3>
-
-        <ProductList products={complementaryProducts} />
+        <div className="mt-6 px-5">
+          <Button
+            className="w-full font-semibold"
+            onClick={handleAddToCartClick}
+          >
+            Adicionar à sacola
+          </Button>
+        </div>
       </div>
 
-      <div className="mt-6 px-5">
-        <Button
-          className="w-full font-semibold"
-          onClick={() => {
-            alert("Adicionado à sacola");
-          }}
-        >
-          Adicionar à sacola
-        </Button>
-      </div>
-    </div>
+      <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
+        <SheetContent className="w-[90vw]">
+          <SheetHeader>
+            <SheetTitle className="text-left">Sacola</SheetTitle>
+          </SheetHeader>
+          <Cart />
+        </SheetContent>
+      </Sheet>
+    </>
   );
 };
 
