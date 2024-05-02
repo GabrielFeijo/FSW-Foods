@@ -5,6 +5,7 @@ import Image from "next/image";
 import { StarIcon } from "lucide-react";
 import DeliveryInfo from "@/components/delivery-info";
 import ProductList from "@/components/product-list";
+import CartBanner from "../_components/cart-banner";
 
 interface RestaurantPageProps {
   params: {
@@ -92,6 +93,8 @@ const RestaurantPage = async ({ params: { id } }: RestaurantPageProps) => {
           />
         </div>
       ))}
+
+      <CartBanner restaurant={restaurant} />
     </div>
   );
 };
