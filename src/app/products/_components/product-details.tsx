@@ -3,6 +3,16 @@ import Cart from "@/components/cart";
 import DeliveryInfo from "@/components/delivery-info";
 import DiscountBadge from "@/components/discount-badge";
 import ProductList from "@/components/product-list";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -42,6 +52,8 @@ const ProductDetails = ({
   complementaryProducts,
 }: ProductDetailsProps) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
+    useState(false);
   const [quantity, setQuantity] = useState(1);
   const { addProductToCart, products } = useContext(CartContext);
 
@@ -55,9 +67,21 @@ const ProductDetails = ({
     setQuantity((prev: number) => prev + 1);
   };
 
-  const handleAddToCartClick = () => {
-    addProductToCart(product, quantity);
+  const addToCart = ({ emptyCart }: { emptyCart?: boolean }) => {
+    addProductToCart(product, quantity, emptyCart);
     setIsCartOpen(true);
+  };
+
+  const handleAddToCartClick = () => {
+    const hasDifferentRestaurantProduct = products.some(
+      (cartProduct) => cartProduct.restaurantId !== product.restaurantId,
+    );
+
+    if (hasDifferentRestaurantProduct) {
+      return setIsConfirmationDialogOpen(true);
+    }
+
+    addToCart({ emptyCart: false });
   };
 
   return (
@@ -143,6 +167,29 @@ const ProductDetails = ({
           <Cart />
         </SheetContent>
       </Sheet>
+
+      <AlertDialog
+        open={isConfirmationDialogOpen}
+        onOpenChange={setIsConfirmationDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-center">
+              Você só pode adicionar itens de uma restaurante por vez
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-center">
+              Tem certeza que deseja adicionar este item? Isto limpará a sua
+              sacola atual.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={() => addToCart({ emptyCart: true })}>
+              Esvaziar sacola e adicionar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

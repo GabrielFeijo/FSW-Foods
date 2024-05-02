@@ -49,7 +49,7 @@ const CartItem = ({ cartProduct }: CartItemProps) => {
           </div>
 
           <div className="flex items-center">
-            <div className="flex flex-1 items-center justify-between gap-2">
+            <div className="flex w-28 items-center justify-between gap-2">
               <Button
                 size="icon"
                 variant={cartProduct.quantity > 1 ? "default" : "ghost"}

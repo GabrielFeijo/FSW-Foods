@@ -20,6 +20,7 @@ interface ICartContext {
       include: { restaurant: { select: { deliveryFee: true } } };
     }>,
     quantity: number,
+    emptyCart?: boolean,
   ) => void;
   changeProductQuantity: (productId: string, type: "add" | "remove") => void;
   removeProductFromCart: (productId: string) => void;
@@ -45,15 +46,17 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [products]);
 
   const totalPrice = useMemo(() => {
-    return products.reduce((acc, product) => {
-      return (
-        acc +
-        calculateProductTotalPrice({
-          ...product,
-          price: (Number(product.price) * product.quantity) as any,
-        })
-      );
-    }, 0);
+    return (
+      products.reduce((acc, product) => {
+        return (
+          acc +
+          calculateProductTotalPrice({
+            ...product,
+            price: (Number(product.price) * product.quantity) as any,
+          })
+        );
+      }, 0) + Number(products[0]?.restaurant?.deliveryFee || 0)
+    );
   }, [products]);
 
   const totalDiscounts = subtotalPrice - totalPrice;
@@ -63,7 +66,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       include: { restaurant: { select: { deliveryFee: true } } };
     }>,
     quantity: number,
+    emptyCart?: boolean,
   ) => {
+    if (emptyCart) {
+      return setProducts([{ ...product, quantity: quantity }]);
+    }
+
     const isProductAlreadyInCart = products.some(
       (cartProduct) => cartProduct.id === product.id,
     );
