@@ -124,7 +124,7 @@ const Cart = () => {
           </div>
         </div>
       ) : (
-        <h2 className="mt-4 text-center">Seu sacola está vazio :(</h2>
+        <h2 className="mt-4 text-center">Seu sacola está vazia :(</h2>
       )}
 
       <AlertDialog
