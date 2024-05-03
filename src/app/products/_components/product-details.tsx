@@ -30,14 +30,7 @@ import { useContext, useState } from "react";
 interface ProductDetailsProps {
   product: Prisma.ProductGetPayload<{
     include: {
-      restaurant: {
-        select: {
-          name: true;
-          imageUrl: true;
-          deliveryFee: true;
-          deliveryTimeMinutes: true;
-        };
-      };
+      restaurant: true;
     };
   }>;
   complementaryProducts: Prisma.ProductGetPayload<{
@@ -164,7 +157,7 @@ const ProductDetails = ({
           <SheetHeader>
             <SheetTitle className="text-left">Sacola</SheetTitle>
           </SheetHeader>
-          <Cart />
+          <Cart setIsOpen={setIsCartOpen} />
         </SheetContent>
       </Sheet>
 

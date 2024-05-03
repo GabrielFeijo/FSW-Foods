@@ -1,5 +1,5 @@
 import { CartContext } from "@/contexts/cart";
-import { useContext, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useState } from "react";
 import CartItem from "./cart-item";
 import { Card, CardContent } from "./ui/card";
 import { formatCurrency } from "@/helpers/price";
@@ -20,13 +20,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-const Cart = () => {
+interface CartProps {
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+}
+
+const Cart = ({ setIsOpen }: CartProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const { products, subtotalPrice, totalPrice, totalDiscounts, clearCart } =
     useContext(CartContext);
   const { data } = useSession();
+  const router = useRouter();
 
   const handleFinishOrderClick = async () => {
     if (!data?.user) return;
@@ -59,6 +66,17 @@ const Cart = () => {
       });
 
       clearCart();
+      setIsOpen(false);
+
+      toast("Seu pedido foi realizado com sucesso!", {
+        description: "Você pode acompanhá-lo na páginas de pedidos!",
+        action: {
+          label: "Ir para pedidos",
+          onClick: () => {
+            router.push("/my-orders");
+          },
+        },
+      });
     } catch (error) {
       console.log(error);
     } finally {
