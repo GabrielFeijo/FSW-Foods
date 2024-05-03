@@ -5,7 +5,11 @@ import { ReactNode, createContext, useMemo, useState } from "react";
 
 export interface CartProduct
   extends Prisma.ProductGetPayload<{
-    include: { restaurant: { select: { deliveryFee: true } } };
+    include: {
+      restaurant: {
+        select: { id: true; deliveryFee: true; deliveryTimeMinutes: true };
+      };
+    };
   }> {
   quantity: number;
 }
@@ -18,13 +22,18 @@ interface ICartContext {
   totalQuantity: number;
   addProductToCart: (
     product: Prisma.ProductGetPayload<{
-      include: { restaurant: { select: { deliveryFee: true } } };
+      include: {
+        restaurant: {
+          select: { id: true; deliveryFee: true; deliveryTimeMinutes: true };
+        };
+      };
     }>,
     quantity: number,
     emptyCart?: boolean,
   ) => void;
   changeProductQuantity: (productId: string, type: "add" | "remove") => void;
   removeProductFromCart: (productId: string) => void;
+  clearCart: () => void;
 }
 
 export const CartContext = createContext<ICartContext>({
@@ -36,6 +45,7 @@ export const CartContext = createContext<ICartContext>({
   addProductToCart: () => {},
   changeProductQuantity: () => {},
   removeProductFromCart: () => {},
+  clearCart: () => {},
 });
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
@@ -61,16 +71,20 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     );
   }, [products]);
 
-  const totalDiscounts =
-    subtotalPrice -
-    totalPrice +
-    Number(products[0]?.restaurant?.deliveryFee || 0);
-
   const totalQuantity = useMemo(() => {
     return products.reduce((acc, product) => {
       return acc + product.quantity;
     }, 0);
   }, [products]);
+
+  const totalDiscounts =
+    subtotalPrice -
+    totalPrice +
+    Number(products[0]?.restaurant?.deliveryFee || 0);
+
+  const clearCart = () => {
+    return setProducts([]);
+  };
 
   const addProductToCart = (
     product: Prisma.ProductGetPayload<{
@@ -125,6 +139,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         totalPrice,
         totalDiscounts,
         totalQuantity,
+        clearCart,
         addProductToCart,
         changeProductQuantity,
         removeProductFromCart,

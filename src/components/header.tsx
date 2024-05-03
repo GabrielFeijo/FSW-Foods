@@ -23,7 +23,7 @@ import { getInitials } from "@/helpers/get-initials";
 import { Separator } from "./ui/separator";
 
 const Header = () => {
-  const { data, status } = useSession();
+  const { data } = useSession();
 
   return (
     <div className="flex items-center justify-between px-5 pt-6">
