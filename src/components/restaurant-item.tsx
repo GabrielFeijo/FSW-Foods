@@ -42,6 +42,7 @@ const RestaurantItem = ({
       toast.error("Erro ao favoritar o restaurante.");
     }
   };
+
   return (
     <Link
       className={cn("min-w-64 max-w-64 cursor-pointer space-y-3", className)}
