@@ -1,17 +1,46 @@
+"use client";
 import { formatCurrency } from "@/helpers/price";
-import { Restaurant } from "@prisma/client";
+import { Restaurant, UserFavoriteRestaurant } from "@prisma/client";
 import { BikeIcon, HeartIcon, StarIcon, TimerIcon } from "lucide-react";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { toggleFavoriteRestaurant } from "@/actions/restaurant";
+import { toast } from "sonner";
 
 interface RestaurantItemProps {
+  userId?: string;
   restaurant: Restaurant;
   className?: string;
+  userFavoriteRestaurants: UserFavoriteRestaurant[];
 }
 
-const RestaurantItem = ({ restaurant, className }: RestaurantItemProps) => {
+const RestaurantItem = ({
+  userId,
+  restaurant,
+  className,
+  userFavoriteRestaurants,
+}: RestaurantItemProps) => {
+  const isFavorite = userFavoriteRestaurants.some(
+    (favorite) => favorite.restaurantId === restaurant.id,
+  );
+
+  const handleFavoriteClick = async (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    if (!userId) return;
+
+    try {
+      await toggleFavoriteRestaurant(userId, restaurant.id);
+      toast.success(
+        isFavorite
+          ? "Restaurante removido dos favoritos!"
+          : "Restaurante favoritado com sucesso!",
+      );
+    } catch (error) {
+      toast.error("Erro ao favoritar o restaurante.");
+    }
+  };
   return (
     <Link
       className={cn("min-w-64 max-w-64 cursor-pointer space-y-3", className)}
@@ -31,12 +60,15 @@ const RestaurantItem = ({ restaurant, className }: RestaurantItemProps) => {
           <span className="text-xs font-semibold">5.0</span>
         </div>
 
-        <Button
-          className="absolute right-2 top-2 h-7 w-7 rounded-full bg-gray-700/70"
-          size="icon"
-        >
-          <HeartIcon size={16} className="fill-white" />
-        </Button>
+        {userId && (
+          <Button
+            className={`absolute right-2 top-2 h-7 w-7 rounded-full bg-gray-700/70 ${isFavorite && "bg-primary hover:bg-gray-700/70"}`}
+            onClick={handleFavoriteClick}
+            size="icon"
+          >
+            <HeartIcon size={16} className="fill-white" />
+          </Button>
+        )}
       </div>
       <div>
         <h3 className="text-sm font-semibold">{restaurant.name}</h3>
