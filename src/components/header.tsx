@@ -45,6 +45,7 @@ const Header = () => {
           <SheetHeader>
             <SheetTitle>Menu</SheetTitle>
           </SheetHeader>
+
           {data?.user ? (
             <div className="flex justify-between pt-6">
               <div className="flex items-center gap-3">
@@ -57,6 +58,7 @@ const Header = () => {
                     {getInitials(data?.user?.name || "Sem Nome")}
                   </AvatarFallback>
                 </Avatar>
+
                 <div>
                   <h3 className="font-semibold">{data?.user?.name}</h3>
                   <span className="block text-xs text-muted-foreground">
@@ -80,9 +82,12 @@ const Header = () => {
             <Button
               variant="ghost"
               className="w-full justify-start space-x-3 rounded-full text-sm font-normal"
+              asChild
             >
-              <HomeIcon size={16} />
-              <span className="block">Início</span>
+              <Link href="/">
+                <HomeIcon size={16} />
+                <span className="block">Início</span>
+              </Link>
             </Button>
 
             {data?.user && (
@@ -100,9 +105,12 @@ const Header = () => {
                 <Button
                   variant="ghost"
                   className="w-full justify-start space-x-3 rounded-full text-sm font-normal"
+                  asChild
                 >
-                  <HeartIcon size={16} />
-                  <span className="block">Restaurantes favoritos</span>
+                  <Link href="/my-favorite-restaurants">
+                    <HeartIcon size={16} />
+                    <span className="block">Restaurantes favoritos</span>
+                  </Link>
                 </Button>
               </>
             )}

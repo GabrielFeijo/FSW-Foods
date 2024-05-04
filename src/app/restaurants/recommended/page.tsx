@@ -1,6 +1,5 @@
 import Header from "@/components/header";
 import RestaurantItem from "@/components/restaurant-item";
-import RestaurantList from "@/components/restaurant-list";
 import { db } from "@/lib/prisma";
 
 const RecommendedRestaurants = async () => {
@@ -16,7 +15,7 @@ const RecommendedRestaurants = async () => {
             <RestaurantItem
               key={restaurant.id}
               restaurant={restaurant}
-              className=" min-w-full  "
+              className="min-w-full"
             />
           ))}
         </div>
