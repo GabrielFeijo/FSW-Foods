@@ -61,7 +61,7 @@ const ProductDetails = ({
   };
 
   const addToCart = ({ emptyCart }: { emptyCart?: boolean }) => {
-    addProductToCart(product, quantity, emptyCart);
+    addProductToCart({ product: { ...product, quantity }, emptyCart });
     setIsCartOpen(true);
   };
 

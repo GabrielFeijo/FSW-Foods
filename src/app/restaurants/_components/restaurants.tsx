@@ -35,7 +35,8 @@ const Restaurants = () => {
             <RestaurantItem
               key={restaurant.id}
               restaurant={restaurant}
-              className=" min-w-full  "
+              className="min-w-full"
+              userFavoriteRestaurants={[]}
             />
           ))}
         </div>
